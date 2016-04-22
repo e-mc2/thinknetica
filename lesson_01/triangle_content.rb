@@ -1,8 +1,8 @@
 print "Write height of triangle: "
-height = Integer(gets.chomp)
+height = gets.chomp.to_f
 
 print "Write base of triangle: "
-base = Integer(gets.chomp)
+base = gets.chomp.to_f
 
 result = 0.5 * height * base
 

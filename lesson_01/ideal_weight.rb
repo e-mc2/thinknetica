@@ -3,7 +3,7 @@ name = gets.chomp
 name.capitalize!
 
 print "#{name}, How tall are you? "
-growth = Integer(gets.chomp)
+growth = gets.chomp.to_i
 
 ideal_weight = growth - 110
 

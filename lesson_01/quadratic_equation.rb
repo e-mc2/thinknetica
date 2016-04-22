@@ -1,12 +1,12 @@
 puts "the quadratic equation: ax^2 + bx + c = 0"
 print "a: "
-a = Integer(gets.chomp)
+a = gets.chomp.to_f
 
 print "b: "
-b = Integer(gets.chomp)
+b = gets.chomp.to_f
 
 print "c: "
-c = Integer(gets.chomp)
+c = gets.chomp.to_f
 
 d = b**2 - 4*a*c
 

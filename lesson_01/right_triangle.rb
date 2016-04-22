@@ -1,11 +1,11 @@
 print "first side of triangle: "
-a = Integer(gets.chomp)
+a = gets.chomp.to_f
 
 print "second side of triangle: "
-b = Integer(gets.chomp)
+b = gets.chomp.to_f
 
 print "third side of triangle: "
-c = Integer(gets.chomp)
+c = gets.chomp.to_f
 
 array_of_sides = [a,b,c].sort
 
