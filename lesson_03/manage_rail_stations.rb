@@ -8,7 +8,7 @@ class Station
   end
 
   def add_train(train)
-    if trains.exclude? train
+    if !trains.include? train
       self.trains << train
     end
   end
@@ -71,17 +71,24 @@ class Train
   end
 
   def move_to_next_station
-   
-    return puts 'Choose the route!' if route == nil || route.points.empty?
-    
+    return puts "Choose the route!" if route == nil || route.points.empty?
     index = station == nil ? 0 : route.points.index(station)+1
+    return puts "The train has already arrived to the end point!" if index > route.points.length-1
 
     next_station = route.points[index]
     next_station.add_train(self)
       
     station.leave(self) if station != nil 
     self.station = next_station
+  end
 
+  def current_point
+    return puts "Choose the route!" if route == nil || route.points.empty?
+
+    current_index = route.points.index station
+    puts " - #{route.points[current_index-1].name}" if current_index > 0
+    puts " * #{station.name}"
+    puts " - #{route.points[current_index+1].name}" if current_index != route.points.length-1
   end
 
 end
