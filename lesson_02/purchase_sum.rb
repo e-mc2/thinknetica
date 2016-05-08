@@ -27,10 +27,10 @@ puts "Your shop list:"
     
 shoplist.each do |item, numbers|
   numbers.each do |name, value|
-    item += ", "+name+" = "+value.to_s
-    total += value
+    item += ", #{name} = #{value}"
   end
+  total += numbers["amount"] * numbers["prise"]
   puts item
 end
 
-puts "Total sum: "+total.to_s
+puts "Total sum: #{total}"
