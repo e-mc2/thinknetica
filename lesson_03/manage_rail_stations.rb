@@ -14,7 +14,7 @@ class Station
   end
 
   def leave(train)
-    self.trains -= [train]
+    self.trains.delete(train)
   end
 
   def show_all_trains
@@ -42,7 +42,7 @@ class Route
   end
 
   def delete_point(point)
-    self.points -= [point]
+    self.points.delete(point)
   end
 
   def show
