@@ -2,12 +2,11 @@ class Train
   include Manufacturer
   attr_accessor :speed, :route, :station
   attr_reader :number, :kind, :vans
-  
+
+  @@instances = {}
+
   def self.find(number)
-    ObjectSpace.each_object(self) do |item|
-      return item if item.number == number
-    end
-    nil
+    @@instances[number]
   end
 
   def initialize(number)
@@ -15,6 +14,7 @@ class Train
     @kind = kind!
     @vans = []
     @speed = 0
+    @@instances[number] = self
   end
   
   def add_van(van) 

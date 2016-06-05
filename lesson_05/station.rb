@@ -2,7 +2,7 @@ class Station
   attr_accessor :trains
   attr_reader :name
   
-  @@instances = 0
+  @@instances = []
   def self.all
     @@instances
   end
@@ -10,7 +10,7 @@ class Station
   def initialize(name)
     @name = name
     @trains = []
-    @@instances += 1
+    @@instances << self
   end
 
   def add_train(train)
