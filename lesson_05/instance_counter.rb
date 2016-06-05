@@ -7,7 +7,7 @@ module InstanceCounter
 
   module ClassMethods
     def instances
-      self.class.class_variable_get :@@instances
+      class_variable_get :@@instances
     end 
   end
 
