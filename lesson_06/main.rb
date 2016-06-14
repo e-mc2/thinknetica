@@ -1,15 +1,17 @@
-require_relative 'route'
+require_relative 'manufacturer'
+require_relative 'instance_counter'
 require_relative 'train'
+require_relative 'route'
 require_relative 'station'
 require_relative 'van'
 
 class Interface
+  attr_accessor :trains, :stations, :vans
 
   def initialize
     @stations = []
     @trains = []
     @vans = []
-    run
   end
 
   def run
@@ -28,14 +30,22 @@ class Interface
       choise = gets.chomp.to_i
 
       case choise
-      when 1 create_station
-      when 2 create_train
-      when 3 create_van
-      when 4 add_van_to_train
-      when 5 delete_van_from_train
-      when 6 change_station
-      when 7 list_of_station
-      when 8 list_of_train
+      when 1 
+        create_station
+      when 2 
+        create_train
+      when 3 
+        create_van
+      when 4 
+        add_van_to_train
+      when 5 
+        delete_van_from_train
+      when 6 
+        change_station
+      when 7 
+        list_of_station
+      when 8 
+        list_of_train
       when 9
         break
       end
@@ -52,12 +62,29 @@ class Interface
   end
 
   def create_train
-    puts "Kind of train (1-Cargo; 2-Passenger):"
-    kind_train = gets.chomp.to_i
-    puts "Number of train:"
-    number_train = gets.chomp.to_i
-    train = kind_train == 1 ? CargoTrain.new(number_train) : PassengerTrain.new(number_train)
-    trains << train
+    
+    begin
+      puts "Kind of train (1-Cargo; 2-Passenger):"
+      kind_train = gets.chomp.to_s
+      raise 'Kind should be 1 or 2' if kind_train !~ /[1-2]{1}/
+    rescue RuntimeError => e
+      puts "#{e.message}"
+      retry
+    end
+
+    begin
+      puts "Number of train:"
+      number_train = gets.chomp.to_s
+  
+      train = kind_train == '1' ? CargoTrain.new(number_train) : PassengerTrain.new(number_train)
+      self.trains << train
+  
+      puts "#{train.class} (no. #{train.number}) has created"
+    rescue RuntimeError => e
+      puts "#{e.message} Try again."
+      retry
+    end
+
   end
   
   def create_van 

@@ -1,36 +1,41 @@
 class Train
   include Manufacturer
+  include InstanceCounter
   attr_accessor :speed, :route, :station
   attr_reader :number, :kind, :vans
 
-  @@instances = {}
-
-  def self.find(number)
-    @@instances[number]
-  end
+  NUMBER_FORMAT = /^[a-z0-9]{3}\-*[a-z0-9]{2}$/i
 
   def initialize(number)
     @number = number
+    validate!
     @kind = kind!
     @vans = []
     @speed = 0
-    @@instances[number] = self
+    register_instance
   end
-  
+
+  def valid?
+    validate!
+  rescue
+    false
+  end
+
   def add_van(van) 
-    return puts "before adding vans you should stop the train!" if speed > 0
+    raise "Before adding vans you should stop the train!" if speed > 0
     self.vans << van
   end
 
   def delete_van(van)
-    return puts "before deleting vans you should stop the train!" if speed > 0
+    raise "Before deleting vans you should stop the train!" if speed > 0
     self.vans.delete(van)
   end
 
   def move_to_next_station
-    return puts "Choose the route!" if route == nil || route.points.empty?
+    raise "Choose the route!" if route == nil || route.points.empty?
+    
     index = station == nil ? 0 : route.points.index(station)+1
-    return puts "The train has already arrived to the end point!" if index > route.points.length-1
+    raise "The train has already arrived to the end point!" if index > route.points.length-1
 
     next_station = route.points[index]
     next_station.add_train(self)
@@ -40,7 +45,7 @@ class Train
   end
 
   def current_point
-    return puts "Choose the route!" if route == nil || route.points.empty?
+    raise"Choose the route!" if route == nil || route.points.empty?
 
     current_index = route.points.index station
     puts " - #{route.points[current_index-1].name}" if current_index > 0
@@ -52,8 +57,12 @@ class Train
 
   attr_writer :kind, :vans
   
-  def kind!
-    "Base"
+  def validate!
+    raise "You should use classes PassengerTrain or CargoTrain." if self.class == Train
+    raise "Number shouldn't be nil." if number.nil?
+    raise "Number should be 5 or 6 characters." if number.length < 5 && number.length > 6
+    raise "Number has invalid format. XXX-XX or XXXXX." if number !~ NUMBER_FORMAT
+    true
   end
 end
 
