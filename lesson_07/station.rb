@@ -31,4 +31,8 @@ class Station
     puts "List of \"#{kind}\" trains on #{name} station:"
     trains.each {|item| puts " - #{item.number }" if item.kind == kind }
   end
+
+  def select_trains
+    self.trains.each { |item| yield(item) if block_given? }
+  end
 end

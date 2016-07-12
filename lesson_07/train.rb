@@ -52,6 +52,10 @@ class Train
     puts " * #{station.name}"
     puts " - #{route.points[current_index+1].name}" if current_index != route.points.length-1
   end
+
+  def select_vans
+    self.vans.each { |item| yield(item) if block_given?}
+  end
   
   protected
 
