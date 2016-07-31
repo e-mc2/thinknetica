@@ -1,34 +1,34 @@
 # basic class for the train object
 class Train
-  include Manufacturer
+  extend Accessor
+  include Validation
   include InstanceCounter
-  attr_accessor :speed, :route, :station
-  attr_reader :number, :kind, :vans
+
+  attr_reader :number, :kind, :speed
+  attr_accessor_with_history :vans, :route, :station
 
   FORMAT = /^[a-z0-9]{3}\-*[a-z0-9]{2}$/i
 
   def initialize(number)
+    validate! number, :presence
+    validate! number, :format, FORMAT, "XXX-XX or XXXXX"
+    
     @number = number
-    validate!
     @kind = kind!
     @vans = []
     @speed = 0
     register_instance
   end
 
-  def valid?
-    validate!
-  rescue
-    false
-  end
-
   def add_van(van)
-    raise 'Before adding vans you should stop the train!' if speed > 0
+    validate! speed, :equal, 0
+    van_class = self.class == PassengerTrain ? PassengerTrain : PassengerVan
+    validate! van, :type, van_class
     vans << van
   end
 
   def delete_van(van)
-    raise 'Before deleting vans you should stop the train!' if speed > 0
+    validate! speed, :equal, 0
     vans.delete(van)
   end
 
@@ -57,16 +57,6 @@ class Train
   protected
 
   attr_writer :kind, :vans
-
-  def validate!
-    its_train = self.class == Train
-    proper_length = number.length < 5 && number.length > 6
-    raise 'You should use classes PassengerTrain or CargoTrain.' if its_train
-    raise 'Number shouldn\'t be nil.' if number.nil?
-    raise 'Number should be 5 or 6 characters.' if proper_length
-    raise 'Number has invalid format. XXX-XX or XXXXX.' if number !~ FORMAT
-    true
-  end
 
   private
 
