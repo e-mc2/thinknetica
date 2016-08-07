@@ -9,14 +9,15 @@ class Train
 
   FORMAT = /^[a-z0-9]{3}\-*[a-z0-9]{2}$/i
 
+  validate :number, :presence
+  validate :number, :format, FORMAT, "XXX-XX or XXXXX"
+
   def initialize(number)
-    validate! number, :presence
-    validate! number, :format, FORMAT, "XXX-XX or XXXXX"
-    
     @number = number
     @kind = kind!
     @vans = []
     @speed = 0
+    validate!
     register_instance
   end
 

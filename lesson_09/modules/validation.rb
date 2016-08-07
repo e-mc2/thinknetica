@@ -5,30 +5,47 @@ module Validation
   end
 
   module ClassMethods
-    def validate(attr, kind, *param)
-      return !attr.nil? && attr != '' if kind == :presence
-      return attr =~ param.first if kind == :format
-      return attr.class == param.first if kind == :type
-      return attr != param.first if kind == :equal
-      true
+    attr_accessor :checks
+
+    def validate(attr, kind, *params)
+      @checks ||= {}
+      @checks[attr] ||= []
+      @checks[attr] << { kind: kind, params: params }
     end
   end
 
   module InstanceMethods
-    def validate!(attr, kind, *param)
-      check = self.class.validate(attr, kind, *param)
-      if !check
-        raise "'#{attr}' shouldn't be nil or empty!" if kind == :presence
-        raise "'#{attr}' not equal to format '#{param[1]}'" if kind == :format
-        raise "'#{attr}'.class should be '#{param.first}'" if kind == :type
-        raise "'#{attr}' should be equal '#{param.first}'" if kind == :equal
-      end
-    end
-
     def valide?
       validate!
     rescue
       false
+    end
+
+    private
+
+    VALIDATIONS = {
+      presence: proc do |name, value|
+        raise "'#{name}' shouldn't be nil or empty!" if value.nil? || value == ''
+      end,
+      format: proc do |name, value, params|
+        raise "'#{name}' not equal to format '#{params[1]}'" if value !~ params[0]
+      end,
+      type: proc do |name, value, params|
+        raise "'#{name}'.class should be '#{params.first}'" if value.class != params.first
+      end,
+      equal: proc do |name, value, params|
+        raise "'#{attr}' should be equal '#{params.first}'" if value != params.first
+      end
+    }
+
+    def validate!
+      self.class.checks.each do |key, checks|
+        value = instance_variable_get("@#{key}".to_sym)
+        checks.each do |check| 
+          VALIDATIONS[check[:kind]].call(key, value, check[:params])
+        end
+      end
+      true
     end
   end
 end
@@ -39,12 +56,14 @@ class Test
 
   attr_accessor_with_history :name, :number
 
-  def initialize(name, number, van)
-    validate! name, :presence
-    validate! number, :format, /^[a-z0-9]{3}\-*[a-z0-9]{2}$/i, "XXX-XX or XXXXX"
-    validate! van, :type, CargoVan
+  validate :name, :type, String
+  validate :number, :type, String
+  validate :name, :presence
+  validate :number, :format, /^[a-z0-9]{3}\-*[a-z0-9]{2}$/i, "XXX-XX or XXXXX"
+
+  def initialize(name, number)
     @name = name
     @number = number
-    @van = van
+    validate!
   end
 end

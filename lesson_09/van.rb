@@ -4,11 +4,13 @@ class Van
   include InstanceCounter
   attr_reader :number, :kind
 
+  validate :number, :presence
+  validate :number, :type, Fixnum
+  
   def initialize(number)
-    validate! number, :presence
-    validate! number, :type, Fixnum
     @number = number
     @kind = kind!
+    validate!
     register_instance
   end
 
